@@ -141,7 +141,7 @@ PHP_FUNCTION(qr_save)
     zval *link = NULL;
     long size = 3, margin = 4;
     const char *fn = NULL;
-    int fn_len, argc;
+    int fn_len = 0;
     FILE *fp = NULL;
     png_structp png_ptr;
     png_infop info_ptr;
@@ -152,8 +152,6 @@ PHP_FUNCTION(qr_save)
     int b;
     char buf[4096];
 
-    argc = ZEND_NUM_ARGS();
-
     if (zend_parse_parameters( ZEND_NUM_ARGS() TSRMLS_CC, "r|sll", &link, &fn, &fn_len, &size, &margin) == FAILURE )
         RETURN_FALSE;
 
@@ -163,7 +161,7 @@ PHP_FUNCTION(qr_save)
 
         ZEND_FETCH_RESOURCE2 (qr, php_qrcode *, &link, -1, "qr handle", le_qr, NULL);
 
-        if ((argc == 2) || (argc > 2 && fn != NULL))
+        if (fn != NULL && fn_len > 0)
         {
             fp = VCWD_FOPEN (fn, "wb");
             if (!fp)
@@ -254,7 +252,7 @@ PHP_FUNCTION(qr_save)
 
         efree (row);
 
-        if ((argc == 2) || (argc > 2 && fn != NULL))
+        if (fn != NULL && fn_len > 0)
         {
             fflush (fp);
             fclose (fp);
